@@ -6,8 +6,13 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.io.FileReader;
 import java.io.FileWriter;  
 import java.util.Scanner;
+import java.io.ByteArrayInputStream;
 
 public class Webconnect {
     static void WebConnect(String playername) {
@@ -48,7 +53,7 @@ public class Webconnect {
     
     public static String filecreater() {
         try {
-            File myObj = new File("filename.txt");
+            File myObj = new File("filename.txt"); //create a global file to store the text obtained in the html server
             if (myObj.createNewFile()){
                 System.out.println("File created: " + myObj.getName());
                 String filename = "filename.txt";
@@ -67,7 +72,10 @@ public class Webconnect {
     static void filewriter(String t, String name) {
         try{
             FileWriter myWriter = new FileWriter(name);
-            myWriter.write(t);
+            List<String> myList = new ArrayList<String>(Arrays.asList(t.split(",")));
+            for (int i = 0; i < myList.size(); i++){
+                myWriter.write(myList.get(i) + '\n');
+            }
             myWriter.close();
         } catch(IOException e){
             System.out.println("An error occurred writing to file " + name);
@@ -75,7 +83,7 @@ public class Webconnect {
         }
     }
 
-    static void is_temp_on_dir( ){
+    static void is_temp_on_dir(){
         try{
             File myObj = new File("filename.txt");
             if (myObj.createNewFile()){
@@ -95,6 +103,13 @@ public class Webconnect {
     }
     //born to be full of love forced to be doomed by the narrative
     //I'm kinda lost on what to do after this point
+    static String getStringfromFile() throws IOException {
+        Path fileName = Path.of("filename.txt");
+        String content = Files.readString(fileName);
+
+        System.out.println(content);
+        return content;
+    }
 
     public static void main(String[] args) {
         System.out.print("\033[H\033[2J");  //clear screen
@@ -109,6 +124,8 @@ public class Webconnect {
         } else {
             playername = "Yamisa";
         }
+        myObj.close();
         WebConnect(playername);
+        //filereader_translater();
     }
 }
