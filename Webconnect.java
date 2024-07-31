@@ -9,16 +9,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.io.FileReader;
 import java.io.FileWriter;  
 import java.util.Scanner;
-import java.io.ByteArrayInputStream;
 
 public class Webconnect {
-    static void WebConnect(String playername) {
+    static void WebConnect(String playername) { //TODO: when changed to wifi host based server, put the localhost connection protocoll on the catch section, I think it will be nice
+        //localhost connection protocol
         System.out.println("running webConnect with player name " + playername);
         String hostname = "localhost";
-        int port = 0000;
+        int port = 0000; //TODO: find if there is a more optimal way of doing this
         if(playername == "Tim"){
             port = 8080;
         }
@@ -30,24 +29,25 @@ public class Webconnect {
             Socket client = new Socket(hostname, port);
             System.out.println("connection succesfully esablished to " + hostname + " on port " + port);
             PrintWriter pw = new PrintWriter(client.getOutputStream());
-            pw.println("GET / HTTP/1.1");
-            pw.println("Host: ");
+            pw.println("GET / HTTP/1.1"); //do request to server for data and stuff
+            pw.println("Host: "); 
             pw.println();
             pw.println("<html><body><h1>Hello world<\\h1><\\body><\\html>");
             pw.println();
             pw.flush();
-            is_temp_on_dir();
-            String name = filecreater();
+            is_temp_on_dir(); //check if the final text file has already been created
+            String name = filecreater(); //create final text file
             BufferedReader br = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            String t;
-            while((t = br.readLine()) != null){
-                System.out.println(t);
-                filewriter(t, name);
+            String servergatheredinfo; //variable for the text gathered from the localhost server with the membered connected by a comma
+            while((servergatheredinfo = br.readLine()) != null){
+                System.out.println(servergatheredinfo); 
+                filewriter(servergatheredinfo, name); //send the text from the server and the name of the final text file to the call that will write the final file
             }
             client.close();
             br.close();
         }catch (IOException e) {
             System.out.println("connection was unstable or was unable to be executed");
+            e.printStackTrace();
         }
     }
     
@@ -59,7 +59,7 @@ public class Webconnect {
                 String filename = "filename.txt";
                 return filename;
             } else {
-                System.out.println("File already exists.");
+                System.out.println("File already exists."); //TODO:I think this is kind of unecessary will check up on later date
                 //is_temp_on_dir();
                 String filename = "filename.txt";
                 return filename;
@@ -69,16 +69,16 @@ public class Webconnect {
         }
         return null;
     }
-    static void filewriter(String t, String name) {
+    static void filewriter(String servertext, String filename) {
         try{
-            FileWriter myWriter = new FileWriter(name);
-            List<String> myList = new ArrayList<String>(Arrays.asList(t.split(",")));
-            for (int i = 0; i < myList.size(); i++){
+            FileWriter myWriter = new FileWriter(filename);
+            List<String> myList = new ArrayList<String>(Arrays.asList(servertext.split(","))); //turn the original text got from the localhost server into an arraylist with each element separated
+            for (int i = 0; i < myList.size(); i++){ //write the text from the server into the final text file with the different elements in separate lines
                 myWriter.write(myList.get(i) + '\n');
             }
             myWriter.close();
         } catch(IOException e){
-            System.out.println("An error occurred writing to file " + name);
+            System.out.println("An error occurred writing to file " + filename); //this is bad
             e.printStackTrace();
         }
     }
@@ -86,13 +86,13 @@ public class Webconnect {
     static void is_temp_on_dir(){
         try{
             File myObj = new File("filename.txt");
-            if (myObj.createNewFile()){
+            if (myObj.createNewFile()){ //check if the finalfile exists
                 System.out.println("temp Fyle exists");
             } else {
                 System.out.println("temp file missing");
             }
             if (myObj.delete()) { 
-                System.out.println("Deleted the file: " + myObj.getName()); //MIKU MIKU BEAMMMMMMM
+                System.out.println("Deleted the file: " + myObj.getName()); //MIKU MIKU BEAMMMMMMM(delete file)
             } else {
                 System.out.println("Failed to delete the file.");//oops :O
             }
@@ -103,7 +103,7 @@ public class Webconnect {
     }
     //born to be full of love forced to be doomed by the narrative
     //I'm kinda lost on what to do after this point
-    static String getStringfromFile() throws IOException {
+    static String getStringfromFile() throws IOException { //TODO:I'm lost i don't know what this does but I'm scared that if i delet it the hole program will crash
         Path fileName = Path.of("filename.txt");
         String content = Files.readString(fileName);
 
