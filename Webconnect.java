@@ -5,25 +5,28 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.io.FileWriter;  
 import java.util.Scanner;
+//GUI
+import javax.swing.*;
 
-public class Webconnect {
-    static void WebConnect(String playername) { //TODO: when changed to wifi host based server, put the localhost connection protocoll on the catch section, I think it will be nice
+public class Webconnect extends JFrame{
+    static void WebConnect(String adress) { //TODO: when changed to wifi host based server, put the localhost connection protocoll on the catch section, I think it will be nice
         //localhost connection protocol
-        System.out.println("running webConnect with player name " + playername);
+        System.out.println("running webConnect for " + ' ' + "localhost" + adress);
         String hostname = "localhost";
-        int port = 0000; //TODO: find if there is a more optimal way of doing this
-        if(playername == "Tim"){
-            port = 8080;
-        }
-        if(playername == "Yamisa"){
-            port = 8000;
-        }
+        int port = Integer.parseInt(adress); //TODO: find if there is a more optimal way of doing this
+        //if(playername == "Tim"){
+        //    port = 8080;
+        //}
+        //if(playername == "Yamisa"){
+        //    port = 8000;
+        //}
         try {
             System.out.println("connecting to " + hostname + " on port " + port);
             Socket client = new Socket(hostname, port);
@@ -111,21 +114,50 @@ public class Webconnect {
         return content;
     }
 
-    public static void main(String[] args) {
-        System.out.print("\033[H\033[2J");  //clear screen
-        System.out.flush();                   //still to clear the screen
-        String playername = "Tim";
-        Scanner myObj = new Scanner(System.in);
-        System.out.println("1- Tim" + '\n');
-        System.out.println("2 - Yamisa" + '\n');
-        int userName = myObj.nextInt();
-        if(userName == 1) {
-            playername = "Tim";
-        } else {
-            playername = "Yamisa";
+    public static List<String> filereader() {
+        List<String> Gatheredlines = new ArrayList<>();
+        try{
+            for (int i=0; i<8; i++) {
+                String line = Files.readAllLines(Paths.get("filename.txt")).get(i); //ATENTION: THIS LINE SHOULD ONLY BE USED FOR SMALL TXT FILES
+                System.out.println("line" + ' ' + line);
+                Gatheredlines.add(line);
+            }
+            System.out.println(Gatheredlines);
+            return Gatheredlines;
+        } catch(IOException e){
+            System.out.println("An error has occurred acessing the save file");
+            e.printStackTrace();
+            return Gatheredlines;
         }
-        myObj.close();
-        WebConnect(playername);
-        //filereader_translater();
+    }
+
+    //GUI stuff
+    public static void ServerConnect() { //show message of connecting to the server
+        String adress = JOptionPane.showInputDialog("adress");
+        JOptionPane.showMessageDialog(null, "connecting to" + ' ' + adress);
+        WebConnect(adress);
+    }
+
+    public static void main(String[] args) {
+        System.out.print("\033[H\033[2J");  //clear consol
+        System.out.flush();                   //still to clear the screen
+        JFrame window = new JFrame();
+        window.setTitle("Window Test");
+        window.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        window.setSize(300, 200);
+        window.setLocationRelativeTo(null);
+        window.setVisible(true);
+        JLabel label = new JLabel();
+        ServerConnect();
+        while(true) {
+            List<String> CharInfo = new ArrayList<>();
+            CharInfo = filereader();
+            System.out.println(CharInfo);
+            String text3 = CharInfo.get(3);
+            label.setText(text3);
+            label.setHorizontalTextPosition(JLabel.CENTER);
+            window.add(label);
+            SwingUtilities.updateComponentTreeUI(window);
+        }
     }
 }
